@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Прогноз Погоди — ПР1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      background-attachment: fixed;
+      color: #ffffff;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background blobs for glassmorphism contrast */
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::before {
+      width: 320px;
+      height: 320px;
+      background: rgba(66, 153, 225, 0.35);
+      top: 15%;
+      left: 20%;
+    }
+    body::after {
+      width: 380px;
+      height: 380px;
+      background: rgba(159, 122, 234, 0.3);
+      bottom: 15%;
+      right: 20%;
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 2.2rem;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .header p {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 0.4rem;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 0.6rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      color: #fff;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    .input-wrapper input::placeholder {
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .input-wrapper input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+
+    .search-btn {
+      padding: 0.85rem 1.3rem;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 14px;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(37, 99, 235, 0.45);
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    #result {
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .placeholder-state {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+      padding: 2rem 0;
+    }
+
+    /* Weather Output Cards */
+    .weather-card {
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .location-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.9rem;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      margin-bottom: 1.2rem;
+    }
+
+    .temp-display {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .temp-unit {
+      font-size: 2rem;
+      font-weight: 400;
+    }
+
+    .coords {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 1.5rem;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .metric-item {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.2s ease;
+    }
+
+    .metric-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .metric-icon {
+      font-size: 1.4rem;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Error & Loading States */
+    .error-card {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 16px;
+      padding: 1.2rem;
+      color: #fca5a5;
+      text-align: center;
+      font-size: 0.92rem;
+      animation: fadeIn 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .error-icon {
+      font-size: 1.8rem;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 2.2rem;
+      height: 2.2rem;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      border-top-color: #3b82f6;
+      animation: spin 0.8s linear infinite;
+      margin: 1.5rem auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <h1>🌤️ Погода</h1>
+      <p>Інтеграція Open-Meteo REST API</p>
+    </div>
+
+    <form class="search-form" id="weather-form">
+      <div class="input-wrapper">
+        <input id="city" name="city" placeholder="Введіть місто (напр. Київ)" autocomplete="off" required>
+      </div>
+      <button type="submit" class="search-btn" id="search-btn">
+        Знайти
+      </button>
+    </form>
+
+    <div id="result">
+      <div class="placeholder-state">
+        Введіть назву міста для отримання поточного прогнозу
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('weather-form');
+    const result = document.getElementById('result');
+    const searchBtn = document.getElementById('search-btn');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const cityInput = document.getElementById('city');
+      const city = cityInput.value.trim();
+
+      if (!city) return;
+
+      // Loading State
+      result.innerHTML = `
+        <div style="text-align: center; padding: 1rem 0;">
+          <div class="loading-spinner"></div>
+          <div style="font-size: 0.88rem; color: rgba(255,255,255,0.7);">Завантаження даних...</div>
+        </div>
+      `;
+      searchBtn.disabled = true;
+
+      try {
+        const response = await fetch('/api/weather?city=' + encodeURIComponent(city));
+        const data = await response.json();
+
+        if (!response.ok) {
+          const errorMessage = data.detail || 'Не вдалося отримати дані про погоду';
+          result.innerHTML = `
+            <div class="error-card">
+              <div class="error-icon">⚠️</div>
+              <div><strong>Помилка ${response.status}</strong></div>
+              <div>${errorMessage}</div>
+            </div>
+          `;
+          return;
+        }
+
+        // Render Weather Data
+        const countryText = data.country ? `, ${data.country}` : '';
+        result.innerHTML = `
+          <div class="weather-card">
+            <div class="location-badge">
+              📍 <span>${data.city}${countryText}</span>
+            </div>
+
+            <div class="temp-display">
+              ${data.temperature}<span class="temp-unit">${data.temperature_unit}</span>
+            </div>
+
+            <div class="coords">Координати: ${data.latitude.toFixed(2)}°, ${data.longitude.toFixed(2)}°</div>
+
+            <div class="metrics-grid">
+              <div class="metric-item">
+                <div class="metric-icon">🌡️</div>
+                <div class="metric-label">Температура</div>
+                <div class="metric-value">${data.temperature} ${data.temperature_unit}</div>
+              </div>
+
+              <div class="metric-item">
+                <div class="metric-icon">💨</div>
+                <div class="metric-label">Швидкість вітру</div>
+                <div class="metric-value">${data.wind_speed} ${data.wind_speed_unit}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        result.innerHTML = `
+          <div class="error-card">
+            <div class="error-icon">🔌</div>
+            <div><strong>Помилка з'єднання</strong></div>
+            <div>Не вдалося підключитися до сервера застосунку.</div>
+          </div>
+        `;
+      } finally {
+        searchBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
