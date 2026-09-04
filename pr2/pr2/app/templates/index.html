@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YOLOv8 AI Vision Inspector</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.14);
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-light: rgba(59, 130, 246, 0.15);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    /* Top Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    }
+
+    .brand-title h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-title p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      color: #cbd5e1;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* Layout Grid */
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 960px) {
+      .grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Toolbar Bar */
+    .toolbar-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      padding: 0.8rem 1.2rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.2rem;
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 0.55rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+    }
+
+    .slider-box {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .slider-box input[type="range"] {
+      appearance: none;
+      width: 120px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .slider-box input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      cursor: pointer;
+    }
+
+    .val-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 40px;
+    }
+
+    .preset-list {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-preset {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-preset:hover {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Initial Drag Drop Target */
+    .drop-zone {
+      border: 2px dashed rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius-md);
+      padding: 3.5rem 2rem;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .drop-icon {
+      font-size: 2.8rem;
+      margin-bottom: 0.8rem;
+      opacity: 0.8;
+    }
+
+    /* Stage Area for Image + Bounding Boxes */
+    .stage-container {
+      position: relative;
+      width: 100%;
+      min-height: 420px;
+      background: #090d16;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--card-border);
+    }
+
+    .img-wrapper {
+      position: relative;
+      display: inline-flex;
+      max-width: 100%;
+      line-height: 0;
+    }
+
+    .img-wrapper img {
+      display: block;
+      max-width: 100%;
+      max-height: 620px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* SVG Overlay for Pixel-Perfect Responsive Boxes */
+    .svg-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .svg-rect {
+      transition: all 0.15s ease;
+      cursor: pointer;
+      pointer-events: all;
+    }
+
+    .svg-rect:hover, .svg-rect.active {
+      stroke-width: 3.5px !important;
+      fill-opacity: 0.35 !important;
+    }
+
+    /* HTML Label Overlay */
+    .labels-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .tag-pill {
+      position: absolute;
+      transform: translateY(-100%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #ffffff;
+      padding: 2px 7px;
+      border-radius: 4px 4px 4px 0;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      pointer-events: none;
+    }
+
+    /* Telemetry Sidebar */
+    .section-head {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .metric-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 0.9rem;
+      text-align: center;
+    }
+
+    .metric-card .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .metric-card .lbl {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 0.2rem;
+    }
+
+    /* Filter Pills */
+    .filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .chip-item {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chip-item.active {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Detection Items List */
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .item-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 0.7rem 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .item-card:hover, .item-card.active {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateX(3px);
+    }
+
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-transform: capitalize;
+    }
+
+    .item-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .item-conf {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* Spinner & Banner */
+    .loading-mask {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .banner-error {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">👁️</div>
+        <div class="brand-title">
+          <h1>YOLOv8 AI Vision Inspector</h1>
+          <p>Локальна детекція об'єктів у реальному часі</p>
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        YOLOv8n (PyTorch) Ready
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="grid-layout">
+      
+      <!-- Primary Left Column -->
+      <div class="panel-card">
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+        <!-- Toolbar -->
+        <div class="toolbar-bar">
+          <button type="button" class="btn-action" onclick="document.getElementById('file-input').click()">
+            📷 Завантажити зображення
+          </button>
+
+          <div class="slider-box">
+            <span>Поріг (Confidence):</span>
+            <input type="range" id="conf-range" min="0.10" max="0.95" step="0.05" value="0.25">
+            <span class="val-num" id="conf-val">25%</span>
+          </div>
+
+          <div class="preset-list">
+            <span style="font-size: 0.78rem; color: var(--text-secondary); margin-right: 0.2rem;">Приклади:</span>
+            <button type="button" class="btn-preset" onclick="loadPreset('street')">Вулиця</button>
+            <button type="button" class="btn-preset" onclick="loadPreset('animals')">Тварини</button>
+            <button type="button" class="btn-preset" onclick="loadPreset('room')">Меблі</button>
+            <button type="button" class="btn-preset" onclick="loadPreset('empty')">Порожнє</button>
+          </div>
+        </div>
+
+        <div id="error-box"></div>
+
+        <!-- Initial Drop Target -->
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+          <div class="drop-icon">🖼️</div>
+          <div style="font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem;">Оберіть або перетягніть фотографію</div>
+          <div style="font-size: 0.85rem; color: var(--text-secondary);">Підтримуються JPG, PNG, WEBP</div>
+        </div>
+
+        <!-- Stage Area -->
+        <div class="stage-container" id="stage" style="display: none;">
+          <div class="img-wrapper" id="img-wrapper">
+            <img id="active-img" src="" alt="Analyzed Frame">
+            <svg class="svg-overlay" id="svg-layer" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            <div class="labels-overlay" id="labels-layer"></div>
+          </div>
+
+          <div class="loading-mask" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <div style="margin-top: 1rem; font-size: 0.88rem; color: var(--text-secondary); font-weight: 500;">
+              Виконання нейромережевого аналізу...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Telemetry Sidebar -->
+      <div class="panel-card">
+        <div class="section-head">
+          <span>Результати Детекції</span>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="num" id="stat-count">0</div>
+            <div class="lbl">Знайдено об'єктів</div>
+          </div>
+          <div class="metric-card">
+            <div class="num" id="stat-time" style="color: #3b82f6;">0 ms</div>
+            <div class="lbl">Inference Time</div>
+          </div>
+        </div>
+
+        <div class="section-head" style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase;">
+          <span>Фільтр за класами</span>
+        </div>
+        <div class="filter-chips" id="filter-chips">
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Немає даних</span>
+        </div>
+
+        <div class="section-head" style="font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase;">
+          <span>Перелік знайденого</span>
+        </div>
+        <div class="items-list" id="items-list">
+          <div style="text-align: center; color: var(--text-muted); padding: 3rem 0; font-size: 0.88rem;">
+            Завантажте зображення для аналізу
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Color Palette for classes
+    const COLOR_PALETTE = [
+      '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
+      '#06b6d4', '#ec4899', '#f97316', '#6366f1', '#14b8a6'
+    ];
+
+    function getClassColor(className) {
+      let hash = 0;
+      for (let i = 0; i < className.length; i++) hash = className.charCodeAt(i) + ((hash << 5) - hash);
+      return COLOR_PALETTE[Math.abs(hash) % COLOR_PALETTE.length];
+    }
+
+    let activeFile = null;
+    let detectionResult = null;
+    let activeFilterClass = 'ALL';
+
+    const fileInput = document.getElementById('file-input');
+    const confRange = document.getElementById('conf-range');
+    const confVal = document.getElementById('conf-val');
+    const dropZone = document.getElementById('drop-zone');
+    const stage = document.getElementById('stage');
+    const activeImg = document.getElementById('active-img');
+    const svgLayer = document.getElementById('svg-layer');
+    const labelsLayer = document.getElementById('labels-layer');
+    const loading = document.getElementById('loading');
+    const errorBox = document.getElementById('error-box');
+
+    const statCount = document.getElementById('stat-count');
+    const statTime = document.getElementById('stat-time');
+    const filterChips = document.getElementById('filter-chips');
+    const itemsList = document.getElementById('items-list');
+
+    // Drag & Drop Handlers
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        activeFile = e.dataTransfer.files[0];
+        runInference(activeFile);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        activeFile = e.target.files[0];
+        runInference(activeFile);
+      }
+    });
+
+    confRange.addEventListener('input', (e) => {
+      confVal.textContent = Math.round(e.target.value * 100) + '%';
+      if (activeFile) {
+        runInference(activeFile);
+      }
+    });
+
+    // Run Inference
+    async function runInference(file) {
+      errorBox.innerHTML = '';
+      dropZone.style.display = 'none';
+      stage.style.display = 'flex';
+      loading.style.display = 'flex';
+
+      // Preview Image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        activeImg.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('confidence', confRange.value);
+
+      try {
+        const response = await fetch('/api/detect', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showError(data.detail || 'Не вдалося виконати аналіз');
+          return;
+        }
+
+        detectionResult = data;
+        renderAll(data);
+      } catch (err) {
+        showError('Помилка підключення до сервера');
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    function showError(msg) {
+      errorBox.innerHTML = `<div class="banner-error">⚠️ <strong>Помилка:</strong> ${msg}</div>`;
+      svgLayer.innerHTML = '';
+      labelsLayer.innerHTML = '';
+      statCount.textContent = '0';
+      statTime.textContent = '0 ms';
+      itemsList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem 0;">Помилка</div>';
+    }
+
+    // Render Data
+    function renderAll(data) {
+      statCount.textContent = data.count;
+      statTime.textContent = `${data.inference_time_ms} ms`;
+
+      renderFilterChips(data.objects);
+      renderOverlay(data.objects);
+      renderItemList(data.objects);
+    }
+
+    function renderFilterChips(objects) {
+      const counts = {};
+      objects.forEach(o => counts[o.class_name] = (counts[o.class_name] || 0) + 1);
+
+      let html = `<div class="chip-item ${activeFilterClass === 'ALL' ? 'active' : ''}" onclick="setFilter('ALL')">Усі (${objects.length})</div>`;
+      for (const [cls, cnt] of Object.entries(counts)) {
+        const active = activeFilterClass === cls ? 'active' : '';
+        html += `<div class="chip-item ${active}" onclick="setFilter('${cls}')">${cls} (${cnt})</div>`;
+      }
+      filterChips.innerHTML = html;
+    }
+
+    function setFilter(cls) {
+      activeFilterClass = cls;
+      if (detectionResult) {
+        renderFilterChips(detectionResult.objects);
+        renderOverlay(detectionResult.objects);
+        renderItemList(detectionResult.objects);
+      }
+    }
+
+    // Render SVG Bounding Rectangles & Label Pills
+    function renderOverlay(objects) {
+      svgLayer.innerHTML = '';
+      labelsLayer.innerHTML = '';
+
+      objects.forEach(obj => {
+        if (activeFilterClass !== 'ALL' && obj.class_name !== activeFilterClass) return;
+
+        const color = getClassColor(obj.class_name);
+        const norm = obj.bbox_normalized;
+
+        // SVG Rectangle
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'svg-rect');
+        rect.setAttribute('id', `rect-${obj.id}`);
+        rect.setAttribute('x', norm.left_pct);
+        rect.setAttribute('y', norm.top_pct);
+        rect.setAttribute('width', norm.width_pct);
+        rect.setAttribute('height', norm.height_pct);
+        rect.setAttribute('rx', '0.8');
+        rect.setAttribute('ry', '0.8');
+        rect.setAttribute('stroke', color);
+        rect.setAttribute('stroke-width', '2');
+        rect.setAttribute('vector-effect', 'non-scaling-stroke');
+        rect.setAttribute('fill', color);
+        rect.setAttribute('fill-opacity', '0.15');
+
+        rect.addEventListener('mouseenter', () => highlight(obj.id));
+        rect.addEventListener('mouseleave', () => unhighlight(obj.id));
+
+        svgLayer.appendChild(rect);
+
+        // HTML Label Pill
+        const pill = document.createElement('div');
+        pill.className = 'tag-pill';
+        pill.id = `pill-${obj.id}`;
+        pill.style.left = `${norm.left_pct}%`;
+        pill.style.top = `${norm.top_pct}%`;
+        pill.style.backgroundColor = color;
+        pill.textContent = `${obj.class_name} ${obj.confidence_percent}%`;
+
+        labelsLayer.appendChild(pill);
+      });
+    }
+
+    function renderItemList(objects) {
+      if (!objects || objects.length === 0) {
+        itemsList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2.5rem 0; font-size: 0.88rem;">Об\'єктів не знайдено</div>';
+        return;
+      }
+
+      let html = '';
+      objects.forEach(obj => {
+        if (activeFilterClass !== 'ALL' && obj.class_name !== activeFilterClass) return;
+
+        const color = getClassColor(obj.class_name);
+        html += `
+          <div class="item-card" id="card-${obj.id}" onmouseenter="highlight(${obj.id})" onmouseleave="unhighlight(${obj.id})">
+            <div class="item-info">
+              <div class="item-dot" style="background: ${color}; box-shadow: 0 0 6px ${color};"></div>
+              <span>${obj.class_name}</span>
+            </div>
+            <div class="item-conf" style="color: ${color};">${obj.confidence_percent}%</div>
+          </div>
+        `;
+      });
+
+      itemsList.innerHTML = html;
+    }
+
+    function highlight(id) {
+      const r = document.getElementById(`rect-${id}`);
+      const c = document.getElementById(`card-${id}`);
+      if (r) r.classList.add('active');
+      if (c) c.classList.add('active');
+    }
+
+    function unhighlight(id) {
+      const r = document.getElementById(`rect-${id}`);
+      const c = document.getElementById(`card-${id}`);
+      if (r) r.classList.remove('active');
+      if (c) c.classList.remove('active');
+    }
+
+    // Canvas Presets
+    function loadPreset(type) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 480;
+      const ctx = canvas.getContext('2d');
+
+      if (type === 'street') {
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(0, 0, 640, 480);
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 240, 640, 240);
+
+        // Car
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(100, 260, 200, 80);
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath(); ctx.arc(140, 340, 22, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(260, 340, 22, 0, Math.PI*2); ctx.fill();
+
+        // Person
+        ctx.fillStyle = '#3b82f6';
+        ctx.beginPath(); ctx.arc(440, 200, 22, 0, Math.PI*2); ctx.fill();
+        ctx.fillRect(428, 222, 24, 75);
+      } else if (type === 'animals') {
+        ctx.fillStyle = '#065f46';
+        ctx.fillRect(0, 0, 640, 480);
+
+        // Dog
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(200, 200, 160, 90);
+        ctx.beginPath(); ctx.arc(180, 200, 35, 0, Math.PI*2); ctx.fill();
+      } else if (type === 'room') {
+        ctx.fillStyle = '#1e1b4b';
+        ctx.fillRect(0, 0, 640, 480);
+
+        // Chair
+        ctx.fillStyle = '#92400e';
+        ctx.fillRect(180, 200, 120, 150);
+        // Bottle
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(400, 180, 35, 100);
+      } else if (type === 'empty') {
+        ctx.fillStyle = '#18181b';
+        ctx.fillRect(0, 0, 640, 480);
+      }
+
+      canvas.toBlob((blob) => {
+        activeFile = new File([blob], `${type}-sample.jpg`, { type: 'image/jpeg' });
+        runInference(activeFile);
+      }, 'image/jpeg');
+    }
+  </script>
+</body>
+</html>
