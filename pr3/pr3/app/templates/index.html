@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Підтримка магазину «Сузірʼя» | AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #090d16;
+      --bg-surface: rgba(18, 24, 38, 0.7);
+      --bg-surface-hover: rgba(28, 36, 56, 0.7);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(99, 102, 241, 0.5);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --primary-glow: rgba(99, 102, 241, 0.25);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg-main);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(14, 165, 233, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #818cf8;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 480px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      transition: border-color 0.2s ease;
+    }
+
+    /* Fast Chips */
+    .chips-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.65rem;
+    }
+
+    .chips-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: inherit;
+    }
+
+    .chip:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    /* Textarea & Input */
+    .input-wrapper {
+      position: relative;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 1rem 1.1rem;
+      background: rgba(10, 14, 23, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: inherit;
+      resize: vertical;
+      outline: none;
+      transition: all 0.2s ease;
+      line-height: 1.5;
+    }
+
+    textarea::placeholder {
+      color: var(--text-dim);
+    }
+
+    textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+      background: rgba(10, 14, 23, 0.85);
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    button.submit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    button.submit-btn:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    button.submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Response Container */
+    .response-card {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .response-card.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .response-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      padding: 0.35rem 0.7rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .response-content {
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+
+    .response-footer {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .meta-tag {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .meta-tag strong {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Loading state */
+    .loading-dots {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .loading-dots span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: blink 1.4s infinite both;
+    }
+
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Error state */
+    .response-card.error {
+      border-color: rgba(244, 63, 94, 0.3);
+      background: rgba(30, 15, 22, 0.7);
+    }
+
+    .response-card.error .response-content {
+      color: #fda4af;
+    }
+
+    .response-card.error .response-title {
+      color: var(--accent-rose);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="badge">
+        <div class="badge-dot"></div>
+        <span>Система активна · LLM API</span>
+      </div>
+      <h1>Служба підтримки</h1>
+      <p class="subtitle">Інтелектуальний консультант магазину «Сузірʼя». Відповідає суворо на основі офіційних правил (context.md).</p>
+    </header>
+
+    <!-- Query Box -->
+    <div class="card">
+      <div class="chips-label">Швидкі запитання для перевірки:</div>
+      <div class="chips-group">
+        <button class="chip" type="button" onclick="setQuestion('Скільки часу триває доставка по Україні та скільки вона коштує?')">📦 Доставка та тарифи</button>
+        <button class="chip" type="button" onclick="setQuestion('Купив навушники-вкладиші 3 дні тому, хочу повернути. Чи можна?')">🎧 Повернення навушників</button>
+        <button class="chip" type="button" onclick="setQuestion('Чи можна сплатити накладеним платежем замовлення на 12 000 грн?')">💳 Оплата > 10 000 грн</button>
+        <button class="chip" type="button" onclick="setQuestion('Чи діє гарантія, якщо клавіатура перестала працювати після падіння у воду?')">⚠️ Гарантійний випадок</button>
+      </div>
+
+      <form id="form">
+        <div class="input-wrapper">
+          <textarea id="question" placeholder="Опишіть ваше питання або оберіть шаблон зверху..." required></textarea>
+        </div>
+        <div class="actions">
+          <span class="hint">Ctrl + Enter для швидкого надсилання</span>
+          <button type="submit" class="submit-btn" id="submit-btn">
+            <span id="btn-text">Надіслати запит</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Response Box -->
+    <div class="response-card" id="response-card">
+      <div class="response-header">
+        <div class="response-title" id="response-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Відповідь консультанта</span>
+        </div>
+        <button class="copy-btn" id="copy-btn" type="button" onclick="copyAnswer()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copy-text">Скопіювати</span>
+        </button>
+      </div>
+
+      <div class="response-content" id="answer"></div>
+
+      <div class="response-footer" id="meta-footer">
+        <div class="meta-tag" id="meta-model"><strong>Модель:</strong> -</div>
+        <div class="meta-tag" id="meta-time"><strong>Час:</strong> -</div>
+        <div class="meta-tag" id="meta-status"><strong>Статус:</strong> 200 OK</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('form');
+    const question = document.getElementById('question');
+    const responseCard = document.getElementById('response-card');
+    const responseTitle = document.getElementById('response-title');
+    const answer = document.getElementById('answer');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const metaModel = document.getElementById('meta-model');
+    const metaTime = document.getElementById('meta-time');
+    const metaStatus = document.getElementById('meta-status');
+    const copyText = document.getElementById('copy-text');
+
+    function setQuestion(text) {
+      question.value = text;
+      question.focus();
+    }
+
+    // Ctrl + Enter to submit
+    question.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        form.requestSubmit();
+      }
+    });
+
+    async function copyAnswer() {
+      if (!answer.textContent) return;
+      await navigator.clipboard.writeText(answer.textContent);
+      copyText.textContent = 'Скопійовано!';
+      setTimeout(() => {
+        copyText.textContent = 'Скопіювати';
+      }, 2000);
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const queryText = question.value.trim();
+      if (!queryText) return;
+
+      submitBtn.disabled = true;
+      btnText.innerHTML = 'Обробка <span class="loading-dots"><span></span><span></span><span></span></span>';
+      
+      responseCard.className = 'response-card visible';
+      responseTitle.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span>Генерація відповіді...</span>
+      `;
+      answer.textContent = 'Запитуємо модель через API...';
+
+      try {
+        const response = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: queryText }),
+        });
+        
+        const data = await response.json();
+
+        if (!response.ok) {
+          responseCard.className = 'response-card visible error';
+          responseTitle.innerHTML = '<span>Помилка запиту</span>';
+          answer.textContent = data.detail || `Помилка ${response.status}`;
+          metaStatus.innerHTML = `<strong>Статус:</strong> ${response.status} Error`;
+          metaModel.innerHTML = `<strong>Модель:</strong> -`;
+          metaTime.innerHTML = `<strong>Час:</strong> -`;
+          return;
+        }
+
+        responseCard.className = 'response-card visible';
+        responseTitle.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Відповідь консультанта</span>
+        `;
+        answer.textContent = data.answer ?? JSON.stringify(data, null, 2);
+
+        metaStatus.innerHTML = `<strong>Статус:</strong> 200 OK`;
+        metaModel.innerHTML = `<strong>Модель:</strong> ${data.model || 'N/A'}`;
+        
+        const duration = data.elapsed_time ?? data.elapsed;
+        metaTime.innerHTML = `<strong>Час:</strong> ${duration !== undefined ? Number(duration).toFixed(2) + ' с' : 'N/A'}`;
+
+      } catch (error) {
+        responseCard.className = 'response-card visible error';
+        responseTitle.innerHTML = '<span>Помилка зʼєднання</span>';
+        answer.textContent = 'Не вдалося звʼязатися із бекендом застосунку.';
+        metaStatus.innerHTML = `<strong>Статус:</strong> Network Error`;
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = 'Надіслати запит';
+      }
+    });
+  </script>
+</body>
+</html>
