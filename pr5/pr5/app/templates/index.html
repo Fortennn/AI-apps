@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Пошук у базі знань «Сузірʼя» — ПР5</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --border-focus: #3b82f6;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 16px -2px rgba(15,23,42,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      padding: 2rem 1.5rem;
+      max-width: 82rem;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    header {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-tag {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .status-badge {
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .status-badge.ready {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+
+    .status-badge.warn {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #991b1b;
+    }
+
+    /* SEARCH FORM */
+    .search-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .query-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type=text] {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input[type=text]:focus {
+      background: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+
+    button.btn-search {
+      padding: 0.65rem 1.4rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button.btn-search:hover:not([disabled]) {
+      background: var(--primary-hover);
+    }
+
+    button.btn-search:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* FILTER CONTROLS */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .control-group label {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    select, input[type=number] {
+      padding: 0.45rem 0.65rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+
+    select:focus, input[type=number]:focus {
+      background: #fff;
+      border-color: var(--primary);
+    }
+
+    /* QUICK CHIPS */
+    .quick-chips {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.85rem;
+    }
+
+    .chip {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chip:hover {
+      background: var(--primary-light);
+      border-color: #bfdbfe;
+      color: var(--primary);
+    }
+
+    /* COLUMNS COMPARISON */
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 54rem) {
+      .columns { grid-template-columns: 1fr; }
+    }
+
+    .column-panel {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      min-height: 24rem;
+    }
+
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .column-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .time-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--surface-subtle);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      color: var(--primary);
+    }
+
+    .hits-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* RESULT ITEM */
+    .hit {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1rem;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+
+    .hit:hover {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hit .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .hit .title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .hit .score-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+    }
+
+    .bar {
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      margin-bottom: 0.6rem;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #2563eb);
+      border-radius: 2px;
+    }
+
+    .hit .text {
+      font-size: 0.86rem;
+      line-height: 1.55;
+      color: #334155;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 0.6rem;
+    }
+
+    .hit .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .meta-pill {
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .meta-source {
+      font-family: 'JetBrains Mono', monospace;
+      color: #475569;
+    }
+
+    .empty-state {
+      margin: auto;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 3rem 1rem;
+    }
+
+    .error-card {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 0.85rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="brand-title">🔍 Пошук у базі знань «Сузірʼя»</div>
+      <div class="brand-tag">ПР5: Семантичний пошук (Multilingual-E5) проти BM25</div>
+    </div>
+    <div class="status-badge" id="status">Перевірка стану...</div>
+  </header>
+
+  <!-- SEARCH FORM & FILTERS -->
+  <div class="search-card">
+    <form id="form">
+      <div class="query-row">
+        <input type="text" id="query" placeholder="Введіть пошуковий запит (наприклад: як повернути навушники, OR-X2-BLK, помилка E3)..." required>
+        <button type="submit" class="btn-search" id="send">Шукати</button>
+      </div>
+
+      <!-- FILTER CONTROLS -->
+      <div class="filter-grid">
+        <div class="control-group">
+          <label>Режим пошуку</label>
+          <select id="mode">
+            <option value="both">Обидва способи</option>
+            <option value="semantic">Лише семантичний</option>
+            <option value="keyword">Лише за словами</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Кількість (top-k)</label>
+          <input type="number" id="topk" value="5" min="1" max="50">
+        </div>
+
+        <div class="control-group">
+          <label>Поріг схожості</label>
+          <input type="number" id="threshold" step="0.01" min="0" max="1" placeholder="За замовч.">
+        </div>
+
+        <div class="control-group">
+          <label>Категорія</label>
+          <select id="f-category">
+            <option value="">Будь-яка</option>
+            <option>правила</option>
+            <option>гарантія</option>
+            <option>faq</option>
+            <option>інструкція</option>
+            <option>програма</option>
+            <option>політика</option>
+            <option>довідник</option>
+            <option>внутрішнє</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Товар</label>
+          <select id="f-product">
+            <option value="">Будь-який</option>
+            <option>Оріон X2</option>
+            <option>Вега S</option>
+            <option>Альтаїр AX3</option>
+            <option>Сіріус R10</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Аудиторія</label>
+          <select id="f-audience">
+            <option value="">Будь-яка</option>
+            <option>клієнти</option>
+            <option>персонал</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Статус</label>
+          <select id="f-status">
+            <option value="">Будь-який</option>
+            <option>чинний</option>
+            <option>архів</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- QUICK CHIPS -->
+      <div class="quick-chips">
+        <span style="font-size: 0.76rem; color: var(--text-light); align-self: center; margin-right: 0.2rem;">Приклади:</span>
+        <button type="button" class="chip" onclick="setQuery('OR-X2-BLK')">🏷️ OR-X2-BLK</button>
+        <button type="button" class="chip" onclick="setQuery('помилка E3')">⚠️ Помилка E3</button>
+        <button type="button" class="chip" onclick="setQuery('як отримати гроші назад')">🔄 Синонім: гроші назад</button>
+        <button type="button" class="chip" onclick="setQuery('refund policy')">🌍 refund policy</button>
+        <button type="button" class="chip" onclick="setQuery('навушнки не заряджаютьсяя')">✏️ Описка в слові</button>
+        <button type="button" class="chip" onclick="setQuery('від якої суми безкоштовна доставка')">🚚 Доставка (чинна/архів)</button>
+        <button type="button" class="chip" onclick="setQuery('де відремонтувати навушники в Києві')">📍 Сервіс у Києві</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- RESULTS COLUMNS -->
+  <div class="columns">
+    <!-- SEMANTIC COLUMN -->
+    <section class="column-panel">
+      <div class="column-header">
+        <h2>⚡ Семантичний пошук (E5)</h2>
+        <span class="time-badge" id="t-semantic">—</span>
+      </div>
+      <div class="hits-list" id="semantic">
+        <div class="empty-state">Введіть запит для виконання семантичного пошуку.</div>
+      </div>
+    </section>
+
+    <!-- KEYWORD COLUMN -->
+    <section class="column-panel">
+      <div class="column-header">
+        <h2>🔤 Пошук за словами (BM25)</h2>
+        <span class="time-badge" id="t-keyword">—</span>
+      </div>
+      <div class="hits-list" id="keyword">
+        <div class="empty-state">Введіть запит для виконання пошуку за ключовими словами.</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const form = document.getElementById('form');
+    const send = document.getElementById('send');
+    const statusEl = document.getElementById('status');
+    const queryInput = document.getElementById('query');
+
+    function setQuery(text) {
+      queryInput.value = text;
+      form.requestSubmit();
+    }
+
+    async function loadStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        if (data.ready) {
+          statusEl.className = 'status-badge ready';
+          statusEl.innerHTML = `● Індекс: <strong>${data.chunks}</strong> фрагментів (${data.documents} док.) · Модель: <code>${data.model}</code>`;
+        } else {
+          statusEl.className = 'status-badge warn';
+          statusEl.textContent = data.hint || 'Індекс не збудовано.';
+        }
+      } catch {
+        statusEl.className = 'status-badge warn';
+        statusEl.textContent = 'Не вдалося перевірити стан індексу.';
+      }
+    }
+
+    function getFilters() {
+      const out = {};
+      for (const key of ['category', 'product', 'audience', 'status']) {
+        const val = document.getElementById(`f-${key}`).value;
+        if (val) out[key] = val;
+      }
+      return out;
+    }
+
+    function renderHits(container, hits, isSemantic) {
+      container.innerHTML = '';
+      if (hits === null) {
+        container.innerHTML = '<div class="empty-state">Цей спосіб було вимкнено в налаштуваннях.</div>';
+        return;
+      }
+      if (!hits.length) {
+        container.innerHTML = '<div class="empty-state">Нічого не знайдено (можливо, результати відсік поріг схожості).</div>';
+        return;
+      }
+
+      const maxScore = Math.max(...hits.map(h => h.score), 1e-9);
+
+      hits.forEach((hit, i) => {
+        const div = document.createElement('div');
+        div.className = 'hit';
+
+        const m = hit.metadata || {};
+        const title = m.title || hit.source;
+        const section = m.section ? ` · ${m.section}` : '';
+        const scoreFormatted = hit.score.toFixed(4);
+
+        let barPct = isSemantic ? (Math.max(0, hit.score) * 100) : (Math.max(0, hit.score) / maxScore * 100);
+
+        const metaPills = [
+          `<span class="meta-pill meta-source">📄 ${hit.source}</span>`
+        ];
+        if (m.section) metaPills.push(`<span class="meta-pill">📌 ${m.section}</span>`);
+        if (m.category) metaPills.push(`<span class="meta-pill">📂 ${m.category}</span>`);
+        if (m.product) metaPills.push(`<span class="meta-pill">🏷️ ${m.product}</span>`);
+        if (m.audience) metaPills.push(`<span class="meta-pill">👤 ${m.audience}</span>`);
+        if (m.status) metaPills.push(`<span class="meta-pill">✓ ${m.status}</span>`);
+
+        div.innerHTML = `
+          <div class="head">
+            <span class="title">${title}${section}</span>
+            <span class="score-tag">${isSemantic ? 'Схожість: ' : 'BM25: '}${scoreFormatted}</span>
+          </div>
+          <div class="bar"><i style="width: ${Math.min(100, Math.max(5, barPct))}%"></i></div>
+          <div class="text">${escapeHtml(hit.text)}</div>
+          <div class="meta-tags">${metaPills.join('')}</div>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function showError(msg) {
+      for (const id of ['semantic', 'keyword']) {
+        const el = document.getElementById(id);
+        el.innerHTML = `<div class="error-card">${msg}</div>`;
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = queryInput.value.trim();
+      if (!query) return;
+
+      const thresholdRaw = document.getElementById('threshold').value;
+      const payload = {
+        query,
+        mode: document.getElementById('mode').value,
+        top_k: Number(document.getElementById('topk').value) || 5,
+        filters: getFilters(),
+        threshold: thresholdRaw === '' ? null : Number(thresholdRaw),
+      };
+
+      send.disabled = true;
+
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          showError(data.detail || `Помилка ${res.status}`);
+          return;
+        }
+
+        renderHits(document.getElementById('semantic'), data.semantic, true);
+        renderHits(document.getElementById('keyword'), data.keyword, false);
+
+        const elap = data.elapsed || {};
+        document.getElementById('t-semantic').textContent = elap.semantic !== undefined ? `${(elap.semantic * 1000).toFixed(0)} мс` : '—';
+        document.getElementById('t-keyword').textContent = elap.keyword !== undefined ? `${(elap.keyword * 1000).toFixed(0)} мс` : '—';
+
+      } catch (err) {
+        showError('Не вдалося звʼязатися із сервером.');
+      } finally {
+        send.disabled = false;
+      }
+    });
+
+    loadStatus();
+  </script>
+</body>
+</html>
