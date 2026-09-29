@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop Assistant — Підтримка магазину «Сузірʼя»</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --surface-subtle: #f8fafc;
+      --border: #e2e8f0;
+      --border-focus: #3b82f6;
+      
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --primary-glow: rgba(37, 99, 235, 0.15);
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 20px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+      --shadow-card: 0 20px 40px -10px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(15, 23, 42, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem 1rem;
+    }
+
+    /* STANDALONE CHAT APP CONTAINER */
+    .chat-app {
+      width: 100%;
+      max-width: 48rem;
+      height: 92vh;
+      max-height: 54rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    .chat-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+    }
+
+    .assistant-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .assistant-avatar {
+      width: 2.75rem;
+      height: 2.75rem;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 1.25rem;
+      box-shadow: 0 2px 10px var(--primary-glow);
+      position: relative;
+    }
+
+    .online-indicator {
+      width: 10px;
+      height: 10px;
+      background: var(--success);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      box-shadow: 0 0 6px var(--success);
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.9); }
+    }
+
+    .assistant-meta h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .status-text {
+      font-size: 0.78rem;
+      color: var(--success);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-action {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: var(--primary-light);
+      border-color: #bfdbfe;
+      color: var(--primary);
+    }
+
+    /* CHAT BODY / MESSAGES */
+    .chat-body {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: #fafafa;
+      scroll-behavior: smooth;
+    }
+
+    .date-divider {
+      text-align: center;
+      margin: 0.25rem 0;
+    }
+
+    .date-pill {
+      background: #ffffff;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* MESSAGE GROUPS */
+    .msg-group {
+      display: flex;
+      flex-direction: column;
+      max-width: 82%;
+      animation: msgPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes msgPop {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-group.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .msg-group.assistant, .msg-group.error {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .msg-bubble {
+      padding: 0.85rem 1.15rem;
+      border-radius: var(--radius-lg);
+      font-size: 0.93rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      position: relative;
+    }
+
+    .msg-group.user .msg-bubble {
+      background: var(--primary);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .msg-group.assistant .msg-bubble {
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .msg-group.error .msg-bubble {
+      background: var(--danger-bg);
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.3rem;
+      padding: 0 0.25rem;
+      font-size: 0.72rem;
+      color: var(--text-light);
+    }
+
+    .status-check {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* STRUCTURED ORDER TRACKING CARD */
+    .chat-card {
+      margin-top: 0.75rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      width: 100%;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .order-card {
+      border-left: 3px solid var(--primary);
+      background: var(--primary-light);
+    }
+
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .order-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--primary);
+    }
+
+    .order-status-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.18rem 0.5rem;
+      border-radius: 4px;
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .order-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* STRUCTURED PILL TAGS */
+    .pill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .pill-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .pill-topic { background: #e0e7ff; color: #3730a3; }
+    .pill-rules { background: #ecfdf5; color: #065f46; }
+    .pill-warn { background: #fffbeb; color: #92400e; }
+    .pill-esc { background: #fee2e2; color: #991b1b; }
+
+    /* TYPING INDICATOR */
+    .typing-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0.75rem 1rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .typing-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--text-light);
+      border-radius: 50%;
+      animation: typeBounce 1.3s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typeBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* QUICK SUGGESTIONS */
+    .quick-suggestions {
+      padding: 0.65rem 1.25rem;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .quick-suggestions::-webkit-scrollbar { display: none; }
+
+    .suggestion-btn {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .suggestion-btn:hover {
+      background: var(--primary-light);
+      border-color: #bfdbfe;
+      color: var(--primary);
+    }
+
+    /* INPUT SECTION */
+    .chat-input-area {
+      padding: 0.9rem 1.25rem 0.75rem;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.45rem 0.6rem 0.45rem 1rem;
+      transition: all 0.2s;
+    }
+
+    .input-wrapper:focus-within {
+      background: #ffffff;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .chat-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.93rem;
+      color: var(--text-main);
+      padding: 0.4rem 0;
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-light);
+    }
+
+    .send-btn {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover:not([disabled]) {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .meta-drawer {
+      font-size: 0.74rem;
+      color: var(--text-light);
+      text-align: center;
+      padding-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STANDALONE CHAT APP -->
+  <main class="chat-app">
+    <!-- HEADER -->
+    <header class="chat-header">
+      <div class="assistant-profile">
+        <div class="assistant-avatar">
+          <span>✨</span>
+          <div class="online-indicator"></div>
+        </div>
+        <div class="assistant-meta">
+          <h1>Shop Assistant</h1>
+          <span class="status-text">● Онлайн (підтримка «Сузірʼя»)</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn-action" id="resetBtn" title="Очистити розмову та почати новий діалог">
+          🔄 Новий діалог
+        </button>
+      </div>
+    </header>
+
+    <!-- MESSAGES BODY -->
+    <div class="chat-body" id="chatBody">
+      <div class="date-divider">
+        <span class="date-pill">Сьогодні</span>
+      </div>
+
+      <!-- WELCOME MESSAGE -->
+      <div class="msg-group assistant">
+        <div class="msg-bubble">
+          Вітаю! Я віртуальний помічник інтернет-магазину «Сузірʼя». Я можу відповісти на запитання щодо замовлень, доставки, оплати, повернення товарів та гарантійних умов. Чим можу допомогти?
+        </div>
+        <div class="msg-footer">
+          <span class="time-stamp">Зараз</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK SUGGESTIONS -->
+    <div class="quick-suggestions">
+      <button class="suggestion-btn" onclick="sendQuickQuery('Замовлення на 1500 грн. Скільки коштуватиме доставка?')">🚚 Вартість доставки</button>
+      <button class="suggestion-btn" onclick="sendQuickQuery('Оформив замовлення на 12 000 грн і хочу заплатити при отриманні. Так можна?')">💳 Оплата при отриманні</button>
+      <button class="suggestion-btn" onclick="sendQuickQuery('Добрий день! Замовлення 482913, навушники прийшли з тріщиною на дужці.')">📦 Замовлення #482913</button>
+      <button class="suggestion-btn" onclick="sendQuickQuery('Замовив навушники-вкладиші три дні тому. Хочу повернути.')">🎧 Повернення товару</button>
+    </div>
+
+    <!-- INPUT AREA -->
+    <div class="chat-input-area">
+      <form id="chatForm" onsubmit="handleFormSubmit(event)">
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            class="chat-input" 
+            id="chatInput" 
+            placeholder="Запитайте про товари, доставку, замовлення..." 
+            autocomplete="off"
+            required
+          >
+          <button type="submit" class="send-btn" id="sendBtn" title="Надіслати">
+            ➤
+          </button>
+        </div>
+      </form>
+      <div class="meta-drawer" id="metaMetrics">
+        Модель: gemini-3.1-flash-lite · ⚡ Блискавичний inference
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const chatBody = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const metaMetrics = document.getElementById('metaMetrics');
+
+    // Клієнтська історія діалогу (ролі user та assistant)
+    const history = [];
+
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Add message to chat
+    function appendMessage(role, text, structuredResult = null) {
+      const group = document.createElement('div');
+      group.className = `msg-group ${role}`;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.textContent = text;
+
+      // Якщо повернулися структуровані дані від моделі
+      if (structuredResult) {
+        // Картка відстеження замовлення
+        if (structuredResult.order_number) {
+          const orderCard = document.createElement('div');
+          orderCard.className = 'chat-card order-card';
+          orderCard.innerHTML = `
+            <div class="order-card-header">
+              <span class="order-number">📦 Замовлення #${structuredResult.order_number}</span>
+              <span class="order-status-tag">В обробці</span>
+            </div>
+            <div class="order-desc">Зафіксовано в системі підтримки згідно з правилами магазину.</div>
+          `;
+          bubble.appendChild(orderCard);
+        }
+
+        // Pill-бейджі структури
+        const pills = document.createElement('div');
+        pills.className = 'pill-tags';
+
+        if (structuredResult.topic) {
+          pills.innerHTML += `<span class="pill-tag pill-topic">📂 ${structuredResult.topic}</span>`;
+        }
+        if (structuredResult.based_on_rules) {
+          pills.innerHTML += `<span class="pill-tag pill-rules">✓ За правилами</span>`;
+        } else {
+          pills.innerHTML += `<span class="pill-tag pill-warn">⚠ Поза правилами</span>`;
+        }
+        if (structuredResult.needs_clarification) {
+          pills.innerHTML += `<span class="pill-tag pill-warn">❓ Потрібне уточнення</span>`;
+        }
+        if (structuredResult.escalate_to_operator) {
+          pills.innerHTML += `<span class="pill-tag pill-esc">👤 Ескалація на оператора</span>`;
+        }
+
+        bubble.appendChild(pills);
+      }
+
+      const footer = document.createElement('div');
+      footer.className = 'msg-footer';
+      footer.innerHTML = `
+        <span class="time-stamp">${getCurrentTime()}</span>
+        ${role === 'user' ? '<span class="status-check">✓✓</span>' : ''}
+      `;
+
+      group.appendChild(bubble);
+      group.appendChild(footer);
+
+      chatBody.appendChild(group);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      return group;
+    }
+
+    // Typing indicator
+    function showTypingIndicator() {
+      const box = document.createElement('div');
+      box.className = 'typing-box';
+      box.id = 'typingIndicator';
+      box.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      `;
+      chatBody.appendChild(box);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      return box;
+    }
+
+    function removeTypingIndicator() {
+      const ind = document.getElementById('typingIndicator');
+      if (ind) ind.remove();
+    }
+
+    // Handle Query Send
+    async function executeQuery(text) {
+      if (!text || !text.trim()) return;
+      const cleanText = text.trim();
+
+      appendMessage('user', cleanText);
+      chatInput.value = '';
+      sendBtn.disabled = true;
+
+      showTypingIndicator();
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: cleanText, history })
+        });
+
+        const data = await response.json();
+        removeTypingIndicator();
+
+        if (!response.ok) {
+          appendMessage('error', data.detail || `Помилка ${response.status}`);
+          return;
+        }
+
+        const result = data.result || data;
+        const reply = result.reply || JSON.stringify(result);
+
+        appendMessage('assistant', reply, result);
+
+        // Зберігаємо репліки у памʼять діалогу
+        history.push({ role: 'user', content: cleanText });
+        history.push({ role: 'assistant', content: reply });
+
+        // Оновлюємо метрики
+        if (data.elapsed !== undefined) {
+          metaMetrics.textContent = `Час: ${Number(data.elapsed).toFixed(2)}с · Токени: ${data.usage?.total_tokens ?? '—'}`;
+        }
+
+      } catch (error) {
+        removeTypingIndicator();
+        appendMessage('error', 'Не вдалося звʼязатися із сервером. Спробуйте ще раз.');
+      } finally {
+        sendBtn.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      executeQuery(chatInput.value);
+    }
+
+    function sendQuickQuery(text) {
+      chatInput.value = text;
+      executeQuery(text);
+    }
+
+    // Reset Chat
+    resetBtn.addEventListener('click', () => {
+      history.length = 0;
+      chatBody.innerHTML = `
+        <div class="date-divider">
+          <span class="date-pill">Сьогодні</span>
+        </div>
+        <div class="msg-group assistant">
+          <div class="msg-bubble">
+            Розмову очищено. Чим я можу допомогти вам сьогодні?
+          </div>
+          <div class="msg-footer">
+            <span class="time-stamp">${getCurrentTime()}</span>
+          </div>
+        </div>
+      `;
+      metaMetrics.textContent = 'Модель: gemini-3.1-flash-lite · ⚡ Блискавичний inference';
+      chatInput.focus();
+    });
+
+    // Auto-focus input on load
+    window.addEventListener('DOMContentLoaded', () => {
+      chatInput.focus();
+    });
+  </script>
+</body>
+</html>
