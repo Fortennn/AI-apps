@@ -1,0 +1,106 @@
+{
+  "run_id": "run-cfe14219",
+  "customer_id": "C-1001",
+  "text": "Де моє замовлення з годинником?",
+  "status": "done",
+  "route": "status",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Де моє замовлення з годинником?"
+      },
+      "output": {
+        "kind": "status",
+        "order_id": null,
+        "item": "годинник",
+        "reason": null,
+        "reason_text": "Де моє замовлення з годинником?",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.535917+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10458"
+      },
+      "output": {
+        "order_id": "10458",
+        "customer_id": "C-1001",
+        "created_at": "2026-10-03",
+        "status": "shipped",
+        "status_label": "Передано в доставку",
+        "total": "5898.00",
+        "items": [
+          {
+            "sku": "VEGA-S",
+            "name": "Смарт-годинник «Вега S»",
+            "quantity": 1,
+            "price": "5499.00"
+          },
+          {
+            "sku": "VEGA-STRAP",
+            "name": "Ремінець для «Вега S», силікон",
+            "quantity": 1,
+            "price": "399.00"
+          }
+        ],
+        "delivery": {
+          "method": "branch",
+          "city": "Київ",
+          "tracking_number": null,
+          "delivered_at": null
+        }
+      },
+      "elapsed": 0.0,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.536084+00:00"
+    },
+    {
+      "n": 3,
+      "name": "status_reply",
+      "kind": "code",
+      "status": "ok",
+      "detail": "Надано статус замовлення клієнту",
+      "input": {
+        "order_id": "10458",
+        "status": "Передано в доставку"
+      },
+      "output": {
+        "reply": "Замовлення №10458 має статус «Передано в доставку» у м. Київ."
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.536096+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Замовлення №10458 має статус «Передано в доставку» у м. Київ.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 7.379997987300158e-05,
+    "total": 0.0002
+  },
+  "created_at": "2026-10-27T08:12:33.535878+00:00",
+  "updated_at": "2026-10-27T08:12:33.536102+00:00"
+}

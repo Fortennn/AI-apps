@@ -1,0 +1,106 @@
+{
+  "run_id": "run-9a274c23",
+  "customer_id": "C-1003",
+  "text": "Фільтри до пилососа із замовлення 10412 не знадобились, хочу повернути обидві упаковки.",
+  "status": "rejected",
+  "route": "return",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Фільтри до пилососа із замовлення 10412 не знадобились, хочу повернути обидві упаковки."
+      },
+      "output": {
+        "kind": "return",
+        "order_id": "10412",
+        "item": "фільтри",
+        "reason": "not_suitable",
+        "reason_text": "Фільтри до пилососа із замовлення 10412 не знадобились, хочу повернути обидві упаковки.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.490976+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10412"
+      },
+      "output": {
+        "order_id": "10412",
+        "customer_id": "C-1003",
+        "created_at": "2026-09-25",
+        "status": "delivered",
+        "status_label": "Виконано",
+        "total": "13897.00",
+        "items": [
+          {
+            "sku": "SIR-R10",
+            "name": "Робот-пилосос «Сіріус R10»",
+            "quantity": 1,
+            "price": "12999.00"
+          },
+          {
+            "sku": "SIR-F3",
+            "name": "Фільтри для «Сіріус R10», 3 шт.",
+            "quantity": 2,
+            "price": "449.00"
+          }
+        ],
+        "delivery": {
+          "method": "pickup",
+          "city": "Кременчук",
+          "tracking_number": null,
+          "delivered_at": "2026-09-29"
+        }
+      },
+      "elapsed": 0.0001,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.491052+00:00"
+    },
+    {
+      "n": 3,
+      "name": "check_return_rules",
+      "kind": "code",
+      "status": "rejected",
+      "detail": "Товар не підлягає поверненню (витратні матеріали або предмети особистої гігієни)",
+      "input": {
+        "sku": "SIR-F3",
+        "returnable": false
+      },
+      "output": {
+        "allowed": false
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.491145+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Товар «Фільтри для «Сіріус R10», 3 шт.» як товар належної якості не підлягає поверненню згідно з правилами магазину.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 0.0001238000113517046,
+    "total": 0.0002
+  },
+  "created_at": "2026-10-27T08:12:33.490933+00:00",
+  "updated_at": "2026-10-27T08:12:33.491152+00:00"
+}

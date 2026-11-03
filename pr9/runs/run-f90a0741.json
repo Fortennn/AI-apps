@@ -1,0 +1,48 @@
+{
+  "run_id": "run-f90a0741",
+  "customer_id": "C-1003",
+  "text": "Добрий день! Хочу повернути робот-пилосос із замовлення 10412",
+  "status": "stopped",
+  "route": null,
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Добрий день! Хочу повернути робот-пилосос із замовлення 10412"
+      },
+      "output": {
+        "kind": "return",
+        "order_id": "10412",
+        "item": "робот-пилосос",
+        "reason": null,
+        "reason_text": "Добрий день! Хочу повернути робот-пилосос із замовлення 10412",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.651738+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": null,
+  "stopped": "Перевищено ліміт кроків: 1 з 1",
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 0.0,
+    "total": 0.0001
+  },
+  "created_at": "2026-10-27T08:12:33.651699+00:00",
+  "updated_at": "2026-10-27T08:12:33.651749+00:00"
+}

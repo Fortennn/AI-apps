@@ -1,0 +1,106 @@
+{
+  "run_id": "run-4533f739",
+  "customer_id": "C-1001",
+  "text": "Хочу повернути годинник Вега S із замовлення 10458.",
+  "status": "rejected",
+  "route": "return",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Хочу повернути годинник Вега S із замовлення 10458."
+      },
+      "output": {
+        "kind": "return",
+        "order_id": "10458",
+        "item": "годинник",
+        "reason": null,
+        "reason_text": "Хочу повернути годинник Вега S із замовлення 10458.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.612045+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10458"
+      },
+      "output": {
+        "order_id": "10458",
+        "customer_id": "C-1001",
+        "created_at": "2026-10-03",
+        "status": "shipped",
+        "status_label": "Передано в доставку",
+        "total": "5898.00",
+        "items": [
+          {
+            "sku": "VEGA-S",
+            "name": "Смарт-годинник «Вега S»",
+            "quantity": 1,
+            "price": "5499.00"
+          },
+          {
+            "sku": "VEGA-STRAP",
+            "name": "Ремінець для «Вега S», силікон",
+            "quantity": 1,
+            "price": "399.00"
+          }
+        ],
+        "delivery": {
+          "method": "branch",
+          "city": "Київ",
+          "tracking_number": null,
+          "delivered_at": null
+        }
+      },
+      "elapsed": 0.0001,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.612121+00:00"
+    },
+    {
+      "n": 3,
+      "name": "check_delivery_status",
+      "kind": "code",
+      "status": "rejected",
+      "detail": "Замовлення ще не отримано (Передано в доставку)",
+      "input": {
+        "order_id": "10458",
+        "status": "shipped"
+      },
+      "output": {
+        "allowed": false
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.612131+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Повернення товару можливе лише після отримання замовлення. Поточний статус замовлення №10458: «Передано в доставку».",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 6.130000110715628e-05,
+    "total": 0.0001
+  },
+  "created_at": "2026-10-27T08:12:33.612003+00:00",
+  "updated_at": "2026-10-27T08:12:33.612136+00:00"
+}

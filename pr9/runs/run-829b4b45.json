@@ -1,0 +1,100 @@
+{
+  "run_id": "run-829b4b45",
+  "customer_id": "C-1002",
+  "text": "Пилосос уже тиждень лежить у відділенні, а я не можу його забрати. Що робити?",
+  "status": "done",
+  "route": "status",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Пилосос уже тиждень лежить у відділенні, а я не можу його забрати. Що робити?"
+      },
+      "output": {
+        "kind": "status",
+        "order_id": null,
+        "item": "робот-пилосос",
+        "reason": null,
+        "reason_text": "Пилосос уже тиждень лежить у відділенні, а я не можу його забрати. Що робити?",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:18:06.429786+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10466"
+      },
+      "output": {
+        "order_id": "10466",
+        "customer_id": "C-1002",
+        "created_at": "2026-09-30",
+        "status": "at_pickup_point",
+        "status_label": "Очікує у відділенні",
+        "total": "12999.00",
+        "items": [
+          {
+            "sku": "SIR-R10",
+            "name": "Робот-пилосос «Сіріус R10»",
+            "quantity": 1,
+            "price": "12999.00"
+          }
+        ],
+        "delivery": {
+          "method": "branch",
+          "city": "Львів",
+          "tracking_number": null,
+          "delivered_at": null
+        }
+      },
+      "elapsed": 0.0,
+      "usage": null,
+      "at": "2026-10-27T08:18:06.429937+00:00"
+    },
+    {
+      "n": 3,
+      "name": "status_reply",
+      "kind": "code",
+      "status": "ok",
+      "detail": "Надано статус замовлення клієнту",
+      "input": {
+        "order_id": "10466",
+        "status": "Очікує у відділенні"
+      },
+      "output": {
+        "reply": "Замовлення №10466 має статус «Очікує у відділенні» у м. Львів."
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:18:06.429951+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Замовлення №10466 має статус «Очікує у відділенні» у м. Львів.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 7.419998291879892e-05,
+    "total": 0.0002
+  },
+  "created_at": "2026-10-27T08:18:06.429741+00:00",
+  "updated_at": "2026-10-27T08:18:06.429958+00:00"
+}

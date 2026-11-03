@@ -1,0 +1,100 @@
+{
+  "run_id": "run-eccb3b0e",
+  "customer_id": "C-1001",
+  "text": "Навушники із замовлення 10421 мені не підійшли, оформіть повернення.",
+  "status": "rejected",
+  "route": "return",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Навушники із замовлення 10421 мені не підійшли, оформіть повернення."
+      },
+      "output": {
+        "kind": "return",
+        "order_id": "10421",
+        "item": "навушники",
+        "reason": "not_suitable",
+        "reason_text": "Навушники із замовлення 10421 мені не підійшли, оформіть повернення.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.495621+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10421"
+      },
+      "output": {
+        "order_id": "10421",
+        "customer_id": "C-1001",
+        "created_at": "2026-09-26",
+        "status": "delivered",
+        "status_label": "Виконано",
+        "total": "2899.00",
+        "items": [
+          {
+            "sku": "ORN-X2",
+            "name": "Навушники «Оріон X2»",
+            "quantity": 1,
+            "price": "2899.00"
+          }
+        ],
+        "delivery": {
+          "method": "branch",
+          "city": "Київ",
+          "tracking_number": null,
+          "delivered_at": "2026-09-30"
+        }
+      },
+      "elapsed": 0.0001,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.495691+00:00"
+    },
+    {
+      "n": 3,
+      "name": "check_return_rules",
+      "kind": "code",
+      "status": "rejected",
+      "detail": "Товар не підлягає поверненню (витратні матеріали або предмети особистої гігієни)",
+      "input": {
+        "sku": "ORN-X2",
+        "returnable": false
+      },
+      "output": {
+        "allowed": false
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.495776+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Товар «Навушники «Оріон X2»» як товар належної якості не підлягає поверненню згідно з правилами магазину.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 0.00011750002158805728,
+    "total": 0.0002
+  },
+  "created_at": "2026-10-27T08:12:33.495583+00:00",
+  "updated_at": "2026-10-27T08:12:33.495782+00:00"
+}

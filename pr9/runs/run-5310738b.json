@@ -1,0 +1,99 @@
+{
+  "run_id": "run-5310738b",
+  "customer_id": "C-1002",
+  "text": "Хочу повернути роутер, він мені не підійшов.",
+  "status": "rejected",
+  "route": "return",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Хочу повернути роутер, він мені не підійшов."
+      },
+      "output": {
+        "kind": "return",
+        "order_id": null,
+        "item": "роутер",
+        "reason": "not_suitable",
+        "reason_text": "Хочу повернути роутер, він мені не підійшов.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.543469+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10377"
+      },
+      "output": {
+        "order_id": "10377",
+        "customer_id": "C-1002",
+        "created_at": "2026-09-08",
+        "status": "delivered",
+        "status_label": "Виконано",
+        "total": "3299.00",
+        "items": [
+          {
+            "sku": "ALT-AX3",
+            "name": "Роутер «Альтаїр AX3»",
+            "quantity": 1,
+            "price": "3299.00"
+          }
+        ],
+        "delivery": {
+          "method": "branch",
+          "city": "Львів",
+          "tracking_number": null,
+          "delivered_at": "2026-09-12"
+        }
+      },
+      "elapsed": 0.0,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.543600+00:00"
+    },
+    {
+      "n": 3,
+      "name": "check_return_window",
+      "kind": "code",
+      "status": "rejected",
+      "detail": "Минуло 24 дн. (максимум 14)",
+      "input": {
+        "days_passed": 24
+      },
+      "output": {
+        "allowed": false
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.543680+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Від дати отримання замовлення минуло 24 дн. Товар належної якості можна повернути лише протягом 14 днів.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 0.0001200000406242907,
+    "total": 0.0003
+  },
+  "created_at": "2026-10-27T08:12:33.543430+00:00",
+  "updated_at": "2026-10-27T08:12:33.543689+00:00"
+}

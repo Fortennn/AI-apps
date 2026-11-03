@@ -1,0 +1,100 @@
+{
+  "run_id": "run-90e71dfa",
+  "customer_id": "C-1002",
+  "text": "Підкажіть, будь ласка, стан мого замовлення 10377.",
+  "status": "done",
+  "route": "status",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Підкажіть, будь ласка, стан мого замовлення 10377."
+      },
+      "output": {
+        "kind": "status",
+        "order_id": "10377",
+        "item": null,
+        "reason": null,
+        "reason_text": "Підкажіть, будь ласка, стан мого замовлення 10377.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.621291+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10377"
+      },
+      "output": {
+        "order_id": "10377",
+        "customer_id": "C-1002",
+        "created_at": "2026-09-08",
+        "status": "delivered",
+        "status_label": "Виконано",
+        "total": "3299.00",
+        "items": [
+          {
+            "sku": "ALT-AX3",
+            "name": "Роутер «Альтаїр AX3»",
+            "quantity": 1,
+            "price": "3299.00"
+          }
+        ],
+        "delivery": {
+          "method": "branch",
+          "city": "Львів",
+          "tracking_number": null,
+          "delivered_at": "2026-09-12"
+        }
+      },
+      "elapsed": 0.0001,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.621393+00:00"
+    },
+    {
+      "n": 3,
+      "name": "status_reply",
+      "kind": "code",
+      "status": "ok",
+      "detail": "Надано статус замовлення клієнту",
+      "input": {
+        "order_id": "10377",
+        "status": "Виконано"
+      },
+      "output": {
+        "reply": "Замовлення №10377 має статус «Виконано» у м. Львів."
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.621406+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Замовлення №10377 має статус «Виконано» у м. Львів.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 8.189998334273696e-05,
+    "total": 0.0002
+  },
+  "created_at": "2026-10-27T08:12:33.621231+00:00",
+  "updated_at": "2026-10-27T08:12:33.621412+00:00"
+}

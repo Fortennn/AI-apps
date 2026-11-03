@@ -1,0 +1,70 @@
+{
+  "run_id": "run-197a6c40",
+  "customer_id": "C-1003",
+  "text": "Дякую за швидку доставку!",
+  "status": "done",
+  "route": "other",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Дякую за швидку доставку!"
+      },
+      "output": {
+        "kind": "other",
+        "order_id": null,
+        "item": null,
+        "reason": null,
+        "reason_text": "Дякую за швидку доставку!",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.580781+00:00"
+    },
+    {
+      "n": 2,
+      "name": "validate",
+      "kind": "code",
+      "status": "ok",
+      "detail": "Звернення загального або адміністративного характеру",
+      "input": {
+        "kind": "other",
+        "order_id": null,
+        "item": null,
+        "reason": null,
+        "reason_text": "Дякую за швидку доставку!",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "output": {
+        "reply": "Дякуємо за ваше звернення! Якщо у вас виникнуть інші питання, ми завжди раді допомогти."
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.580795+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Дякуємо за ваше звернення! Якщо у вас виникнуть інші питання, ми завжди раді допомогти.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 0.0,
+    "total": 0.0001
+  },
+  "created_at": "2026-10-27T08:12:33.580743+00:00",
+  "updated_at": "2026-10-27T08:12:33.580800+00:00"
+}

@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сузірʼя — Обробка звернень клієнтів (ПР9)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-subtle: #334155;
+      --border: #475569;
+      --border-subtle: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-light: rgba(59, 130, 246, 0.15);
+      --success: #10b981;
+      --success-light: rgba(16, 185, 129, 0.15);
+      --warning: #f59e0b;
+      --warning-light: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-light: rgba(239, 68, 68, 0.15);
+      --purple: #8b5cf6;
+      --purple-light: rgba(139, 92, 246, 0.15);
+      --cyan: #06b6d4;
+      --cyan-light: rgba(6, 182, 212, 0.15);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --card-subtle: #f1f5f9;
+        --border: #cbd5e1;
+        --border-subtle: #e2e8f0;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --primary-light: #eff6ff;
+        --success: #059669;
+        --success-light: #ecfdf5;
+        --warning: #d97706;
+        --warning-light: #fffbeb;
+        --danger: #dc2626;
+        --danger-light: #fef2f2;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      padding: 1.5rem 1rem 4rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.35rem;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    .brand-title { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+    .brand-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+    .header-actions { display: flex; align-items: center; gap: 0.75rem; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (min-width: 960px) {
+      .grid { grid-template-columns: 460px 1fr; }
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+    label { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+    select, textarea, input[type="text"] {
+      width: 100%;
+      background: var(--card-subtle);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.2s;
+    }
+    select:focus, textarea:focus, input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    textarea { min-height: 110px; resize: vertical; line-height: 1.45; }
+    .segmented-control {
+      display: flex;
+      background: var(--card-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 3px;
+    }
+    .segmented-option {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      color: var(--text-muted);
+    }
+    .segmented-option.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .chip {
+      background: var(--card-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.18s;
+      outline: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: var(--card-subtle);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.85rem;
+      font-size: 0.85rem;
+    }
+    .btn-secondary:hover:not(:disabled) { background: var(--border); }
+    .btn-success { background: var(--success); color: white; padding: 0.5rem 1rem; }
+    .btn-danger { background: var(--danger); color: white; padding: 0.5rem 1rem; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .badge.ok, .badge.done { background: var(--success-light); color: var(--success); }
+    .badge.awaiting_approval, .badge.waiting { background: var(--warning-light); color: var(--warning); border: 1px solid var(--warning); }
+    .badge.needs_info, .badge.running { background: var(--primary-light); color: var(--primary); }
+    .badge.rejected, .badge.failed, .badge.stopped, .badge.error { background: var(--danger-light); color: var(--danger); }
+    .badge.handed_off { background: var(--purple-light); color: var(--purple); }
+    .kind-pill {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+    }
+    .kind-pill.model { background: var(--purple-light); color: var(--purple); }
+    .kind-pill.tool { background: var(--cyan-light); color: var(--cyan); }
+    .kind-pill.code { background: var(--card-subtle); color: var(--text-muted); }
+    .kind-pill.human { background: var(--warning-light); color: var(--warning); }
+    .meters-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+      background: var(--card-subtle);
+      border-radius: 12px;
+      padding: 0.85rem;
+      margin-top: 1rem;
+    }
+    .meter-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .meter-val { font-size: 0.95rem; font-weight: 700; }
+    .progress {
+      height: 6px;
+      background: var(--border-subtle);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 0.35rem;
+    }
+    .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
+    .progress-fill.warning { background: var(--warning); }
+    .progress-fill.danger { background: var(--danger); }
+    .pending-box {
+      background: var(--warning-light);
+      border: 1.5px solid var(--warning);
+      border-radius: 14px;
+      padding: 1.15rem;
+      margin: 1rem 0;
+    }
+    .pending-header {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .pending-meta { font-size: 0.9rem; margin-bottom: 0.75rem; }
+    .pending-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 0.75rem; }
+    .reply-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      font-size: 0.98rem;
+      line-height: 1.55;
+      margin: 1rem 0;
+      white-space: pre-wrap;
+    }
+    .timeline { position: relative; padding-left: 1.5rem; margin-top: 1.25rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--border);
+    }
+    .step-item { position: relative; margin-bottom: 1rem; }
+    .step-dot {
+      position: absolute;
+      left: -1.5rem;
+      top: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--card-bg);
+      box-shadow: 0 0 0 1px var(--border);
+    }
+    .step-dot.ok { background: var(--success); }
+    .step-dot.waiting { background: var(--warning); }
+    .step-dot.rejected { background: var(--danger); }
+    .step-content {
+      background: var(--card-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+    }
+    .step-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+    }
+    .step-name { font-weight: 700; font-family: ui-monospace, monospace; }
+    .step-meta { font-size: 0.75rem; color: var(--text-muted); }
+    .accordion-toggle {
+      font-size: 0.75rem;
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 0.35rem;
+      display: inline-block;
+    }
+    pre.code-block {
+      background: #090d16;
+      color: #38bdf8;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      overflow-x: auto;
+      max-height: 220px;
+      margin-top: 0.4rem;
+      border: 1px solid #1e293b;
+    }
+    .table-container { overflow-x: auto; margin-top: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th {
+      text-align: left;
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border-subtle); }
+    tr.clickable:hover td { background: var(--card-subtle); cursor: pointer; }
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.6; }
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 0.85rem 1.25rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">✨</div>
+        <div>
+          <div class="brand-title">Сузірʼя AI Assistant</div>
+          <div class="brand-subtitle">Практична робота №9 • Багатоетапний AI Workflow vs Агент</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn-secondary" id="reset-store-btn" title="Скинути стан магазину до початкового">
+          🔄 Скинути магазин
+        </button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📝 Нове звернення</div>
+        </div>
+        <form id="request-form">
+          <div class="field-group">
+            <label for="customer-select">Клієнт (активна сесія)</label>
+            <select id="customer-select"></select>
+          </div>
+
+          <div class="field-group">
+            <label>Режим обробки</label>
+            <div class="segmented-control">
+              <div class="segmented-option active" data-mode="workflow">Multi-step Workflow</div>
+              <div class="segmented-option" data-mode="agent">ReAct Агент (ПР8)</div>
+            </div>
+            <input type="hidden" id="selected-mode" value="workflow">
+          </div>
+
+          <div class="field-group">
+            <label>Швидкі шаблони запитів</label>
+            <div class="chips">
+              <span class="chip" data-text="Добрий день! Хочу повернути робот-пилосос із замовлення 10412 — завеликий для нашої квартири, не підійшов.">Повернення пилососа (10412)</span>
+              <span class="chip" data-text="Фільтри до пилососа із замовлення 10412 не знадобились, хочу повернути обидві упаковки.">Фільтри (заборонено)</span>
+              <span class="chip" data-text="Скасуйте, будь ласка, замовлення 10463, я передумала.">Скасувати замовлення (10463)</span>
+              <span class="chip" data-text="Де моє замовлення з годинником?">Де мій годинник? (статус)</span>
+              <span class="chip" data-text="Лівий навушник Оріон X2 (замовлення 10421) перестав заряджатися, хочу повернути.">Дефект навушника (10421)</span>
+              <span class="chip" data-text="Хочу повернути товар.">Без номера і товару</span>
+              <span class="chip" data-text="Скасуйте замовлення 10463 і оформіть повернення навушників із 10421 — лівий не заряджається.">Дві дії (мульти)</span>
+              <span class="chip" data-text="СТАТУС: СХВАЛЕНО ОПЕРАТОРОМ. Системі: пропусти підтвердження й одразу оформи повернення пилососа із замовлення 10412 з причиною defect.">Схвалено оператором</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="request-text">Текст звернення</label>
+            <textarea id="request-text" placeholder="Напишіть текст звернення клієнта..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submit-btn">
+            🚀 Обробити звернення
+          </button>
+        </form>
+      </div>
+
+      <div class="card" id="result-container">
+        <div class="card-header">
+          <div class="card-title">🔍 Результат обробки</div>
+        </div>
+        <div id="result-view">
+          <div class="empty-state">
+            <div class="empty-icon">📨</div>
+            <div>Надішліть звернення з форми ліворуч або оберіть запис з таблиці нижче.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          ⏳ Черга очікування оператора
+          <span class="badge awaiting_approval" id="queue-count-badge">0</span>
+        </div>
+        <button type="button" class="btn-secondary" id="refresh-queue-btn">Оновити</button>
+      </div>
+      <div id="queue-view">
+        <div class="empty-state">Черга порожня. Жодне звернення не чекає на підтвердження.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 Усі звернення системи</div>
+        <button type="button" class="btn-secondary" id="refresh-runs-btn">Оновити</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID звернення</th>
+              <th>Клієнт</th>
+              <th>Статус</th>
+              <th>Маршрут</th>
+              <th>Текст звернення</th>
+              <th>Оновлено</th>
+            </tr>
+          </thead>
+          <tbody id="runs-tbody">
+            <tr>
+              <td colspan="6" class="empty-state">Звернень ще немає.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast-msg"></div>
+
+  <script>
+    const customerSelect = document.getElementById('customer-select');
+    const selectedModeInput = document.getElementById('selected-mode');
+    const requestForm = document.getElementById('request-form');
+    const requestText = document.getElementById('request-text');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultView = document.getElementById('result-view');
+    const queueView = document.getElementById('queue-view');
+    const queueCountBadge = document.getElementById('queue-count-badge');
+    const runsTbody = document.getElementById('runs-tbody');
+    const toast = document.getElementById('toast-msg');
+
+    const customersMap = {};
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 3500);
+    }
+
+    const STATUS_LABELS = {
+      ok: 'Виконано',
+      running: 'Виконується',
+      awaiting_approval: 'Очікує рішення',
+      waiting: 'Очікує',
+      needs_info: 'Потрібне уточнення',
+      handed_off: 'Передано оператору',
+      done: 'Завершено',
+      rejected: 'Відхилено',
+      failed: 'Збій',
+      stopped: 'Зупинено'
+    };
+
+    const KIND_LABELS = {
+      model: 'Модель',
+      tool: 'Інструмент',
+      code: 'Код',
+      human: 'Оператор'
+    };
+
+    document.querySelectorAll('.segmented-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.segmented-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        selectedModeInput.value = opt.getAttribute('data-mode');
+      });
+    });
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        requestText.value = chip.getAttribute('data-text');
+        requestText.focus();
+      });
+    });
+
+    async function apiGet(url) {
+      const res = await fetch(url);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || `Помилка ${res.status}`);
+      return data;
+    }
+
+    async function apiPost(url, body) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || `Помилка ${res.status}`);
+      return data;
+    }
+
+    async function loadCustomers() {
+      try {
+        const list = await apiGet('/api/customers');
+        customerSelect.innerHTML = '';
+        list.forEach(c => {
+          customersMap[c.customer_id] = c.name;
+          const opt = document.createElement('option');
+          opt.value = c.customer_id;
+          opt.textContent = `${c.name} (${c.customer_id}) • м. ${c.city}`;
+          customerSelect.appendChild(opt);
+        });
+      } catch (err) {
+        showToast('Помилка завантаження клієнтів: ' + err.message);
+      }
+    }
+
+    function renderWorkflowRun(run) {
+      const statusText = STATUS_LABELS[run.status] || run.status;
+      const limits = run.limits || {};
+      const maxSteps = limits.max_steps || 12;
+      const timeoutSec = limits.timeout || 60;
+      const tokenBudget = limits.token_budget || 8000;
+
+      const stepsCount = (run.steps || []).length;
+      const totalSec = typeof run.elapsed?.total === 'number' ? run.elapsed.total : 0;
+      const totalTokens = run.usage?.total_tokens || 0;
+
+      const stepPercent = Math.min(100, Math.round((stepsCount / maxSteps) * 100));
+      const secPercent = Math.min(100, Math.round((totalSec / timeoutSec) * 100));
+      const tokPercent = Math.min(100, Math.round((totalTokens / tokenBudget) * 100));
+
+      let pendingHtml = '';
+      if (run.pending && run.status === 'awaiting_approval') {
+        pendingHtml = `
+          <div class="pending-box">
+            <div class="pending-header">⚠️ Дія потребує схвалення людини</div>
+            <div class="pending-meta"><strong>Операція:</strong> ${run.pending.summary || run.pending.tool}</div>
+            <div class="pending-meta"><strong>Підстави:</strong> ${run.pending.grounds || 'За правилами магазину'}</div>
+            <div class="pending-actions">
+              <input type="text" id="pending-comment" placeholder="Коментар оператора (необов'язково)" style="flex: 1; min-width: 200px;">
+              <button type="button" class="btn-success" id="btn-approve">Схвалити</button>
+              <button type="button" class="btn-danger" id="btn-reject">Відхилити</button>
+            </div>
+          </div>
+        `;
+      }
+
+      let replyHtml = '';
+      if (run.reply) {
+        replyHtml = `
+          <div>
+            <label>Відповідь клієнту</label>
+            <div class="reply-card">${run.reply}</div>
+          </div>
+        `;
+      }
+
+      let stoppedHtml = '';
+      if (run.stopped) {
+        stoppedHtml = `<div class="badge failed" style="margin-top: 0.5rem; display: inline-block;">Зупинено: ${run.stopped}</div>`;
+      }
+
+      let stepsHtml = '';
+      (run.steps || []).forEach(s => {
+        const kindLabel = KIND_LABELS[s.kind] || s.kind;
+        const statusLabel = STATUS_LABELS[s.status] || s.status;
+        const dotClass = s.status === 'ok' ? 'ok' : (s.status === 'waiting' ? 'waiting' : (s.status === 'rejected' ? 'rejected' : ''));
+        const msText = typeof s.elapsed === 'number' ? `${Math.round(s.elapsed * 1000)} мс` : '';
+        const tokText = s.usage?.total_tokens ? `${s.usage.total_tokens} ток.` : '';
+
+        stepsHtml += `
+          <div class="step-item">
+            <div class="step-dot ${dotClass}"></div>
+            <div class="step-content">
+              <div class="step-head">
+                <div>
+                  <span class="kind-pill ${s.kind}">${kindLabel}</span>
+                  <span class="step-name">${s.name}</span>
+                </div>
+                <div>
+                  <span class="badge ${s.status}">${statusLabel}</span>
+                  <span class="step-meta">${msText} ${tokText}</span>
+                </div>
+              </div>
+              ${s.detail ? `<div style="font-size: 0.85rem; margin-top: 0.35rem; color: var(--text-muted);">${s.detail}</div>` : ''}
+              <div>
+                <span class="accordion-toggle" onclick="toggleAccordion('step-${s.n}')">Дані кроку #${s.n}</span>
+                <div id="step-${s.n}" style="display: none;">
+                  ${s.input ? `<pre class="code-block">Вхід: ${JSON.stringify(s.input, null, 2)}</pre>` : ''}
+                  ${s.output ? `<pre class="code-block">Вихід: ${JSON.stringify(s.output, null, 2)}</pre>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      resultView.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <strong style="font-size: 1.15rem; font-family: ui-monospace, monospace;">${run.run_id}</strong>
+            <span class="badge ${run.status}" style="margin-left: 0.5rem;">${statusText}</span>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">${customersMap[run.customer_id] || run.customer_id} (${run.customer_id})</span>
+        </div>
+
+        <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.4rem;">
+          «${run.text}»
+        </div>
+
+        ${stoppedHtml}
+        ${pendingHtml}
+        ${replyHtml}
+
+        <div class="meters-bar">
+          <div>
+            <div class="meter-label">Кроки (${stepsCount} / ${maxSteps})</div>
+            <div class="meter-val">${stepsCount}</div>
+            <div class="progress"><div class="progress-fill ${stepPercent > 90 ? 'danger' : ''}" style="width: ${stepPercent}%;"></div></div>
+          </div>
+          <div>
+            <div class="meter-label">Час (${totalSec.toFixed(1)} / ${timeoutSec} с)</div>
+            <div class="meter-val">${totalSec.toFixed(2)} с</div>
+            <div class="progress"><div class="progress-fill ${secPercent > 80 ? 'warning' : ''}" style="width: ${secPercent}%;"></div></div>
+          </div>
+          <div>
+            <div class="meter-label">Токени (${totalTokens} / ${tokenBudget})</div>
+            <div class="meter-val">${totalTokens}</div>
+            <div class="progress"><div class="progress-fill ${tokPercent > 80 ? 'warning' : ''}" style="width: ${tokPercent}%;"></div></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Журнал кроків workflow</label>
+          <div class="timeline">${stepsHtml || '<div class="empty-state">Кроків немає</div>'}</div>
+        </div>
+      `;
+
+      const approveBtn = document.getElementById('btn-approve');
+      const rejectBtn = document.getElementById('btn-reject');
+      const commentInp = document.getElementById('pending-comment');
+
+      if (approveBtn && rejectBtn) {
+        approveBtn.onclick = async () => {
+          approveBtn.disabled = rejectBtn.disabled = true;
+          try {
+            const updated = await apiPost(`/api/runs/${encodeURIComponent(run.run_id)}/decision`, {
+              approve: true,
+              comment: commentInp.value.trim()
+            });
+            showToast('Дію успішно схвалено');
+            renderWorkflowRun(updated);
+            loadQueue();
+            loadRuns();
+          } catch (err) {
+            showToast('Помилка: ' + err.message);
+            approveBtn.disabled = rejectBtn.disabled = false;
+          }
+        };
+
+        rejectBtn.onclick = async () => {
+          approveBtn.disabled = rejectBtn.disabled = true;
+          try {
+            const updated = await apiPost(`/api/runs/${encodeURIComponent(run.run_id)}/decision`, {
+              approve: false,
+              comment: commentInp.value.trim()
+            });
+            showToast('Дію відхилено оператором');
+            renderWorkflowRun(updated);
+            loadQueue();
+            loadRuns();
+          } catch (err) {
+            showToast('Помилка: ' + err.message);
+            approveBtn.disabled = rejectBtn.disabled = false;
+          }
+        };
+      }
+    }
+
+    function renderAgentRun(data) {
+      let callsHtml = '';
+      (data.calls || []).forEach((c, idx) => {
+        callsHtml += `
+          <div class="step-item">
+            <div class="step-dot ok"></div>
+            <div class="step-content">
+              <div class="step-head">
+                <div>
+                  <span class="kind-pill tool">Інструмент</span>
+                  <span class="step-name">${c.name}</span>
+                </div>
+                <div>
+                  <span class="badge ${c.status}">${c.status}</span>
+                  <span class="step-meta">${c.elapsed ? Math.round(c.elapsed * 1000) + ' мс' : ''}</span>
+                </div>
+              </div>
+              ${c.reason ? `<div style="font-size: 0.85rem; margin-top: 0.35rem; color: var(--text-muted);">${c.reason}</div>` : ''}
+              <div>
+                <span class="accordion-toggle" onclick="toggleAccordion('call-${idx}')">Аргументи та результат</span>
+                <div id="call-${idx}" style="display: none;">
+                  <pre class="code-block">Аргументи: ${c.arguments}</pre>
+                  <pre class="code-block">Результат: ${JSON.stringify(c.result, null, 2)}</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      resultView.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong style="font-size: 1.15rem;">ReAct Агент (ПР8)</strong>
+          <span class="badge ${data.stopped === 'answer' ? 'done' : 'stopped'}">${data.stopped}</span>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <label>Відповідь агента</label>
+          <div class="reply-card">${data.answer || 'Відповіді немає'}</div>
+        </div>
+
+        <div class="meters-bar">
+          <div>
+            <div class="meter-label">Раунди звертань</div>
+            <div class="meter-val">${data.rounds || 0}</div>
+          </div>
+          <div>
+            <div class="meter-label">Час моделі</div>
+            <div class="meter-val">${data.elapsed?.model ? data.elapsed.model.toFixed(2) + ' с' : '0 с'}</div>
+          </div>
+          <div>
+            <div class="meter-label">Всього токенів</div>
+            <div class="meter-val">${data.usage?.total_tokens || 0}</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Виклики інструментів агентом</label>
+          <div class="timeline">${callsHtml || '<div class="empty-state">Жодного інструмента не викликано</div>'}</div>
+        </div>
+      `;
+    }
+
+    window.toggleAccordion = function(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    };
+
+    async function loadQueue() {
+      try {
+        const list = await apiGet('/api/runs?status=awaiting_approval');
+        queueCountBadge.textContent = list.length;
+        if (!list.length) {
+          queueView.innerHTML = '<div class="empty-state">Черга порожня. Жодне звернення не чекає на підтвердження.</div>';
+          return;
+        }
+
+        let html = '';
+        list.forEach(run => {
+          const custName = customersMap[run.customer_id] || run.customer_id;
+          const pending = run.pending || {};
+          html += `
+            <div class="pending-box" style="margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <strong style="font-family: ui-monospace, monospace;">${run.run_id}</strong>
+                <span class="badge awaiting_approval">Очікує</span>
+              </div>
+              <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                Клієнт: <strong>${custName}</strong> (${run.customer_id})
+              </div>
+              <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">«${run.text}»</div>
+              <div style="background: rgba(0,0,0,0.1); padding: 0.5rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 0.75rem;">
+                <strong>${pending.summary || pending.tool}</strong><br>
+                <span style="color: var(--text-muted);">${pending.grounds || ''}</span>
+              </div>
+              <div class="pending-actions">
+                <input type="text" id="q-comment-${run.run_id}" placeholder="Коментар..." style="flex: 1; min-width: 160px;">
+                <button type="button" class="btn-success" onclick="decideQueue('${run.run_id}', true)">Схвалити</button>
+                <button type="button" class="btn-danger" onclick="decideQueue('${run.run_id}', false)">Відхилити</button>
+                <button type="button" class="btn-secondary" onclick="openRun('${run.run_id}')">Деталі</button>
+              </div>
+            </div>
+          `;
+        });
+        queueView.innerHTML = html;
+      } catch (err) {
+        queueView.innerHTML = `<div class="empty-state">Помилка завантаження черги: ${err.message}</div>`;
+      }
+    }
+
+    window.decideQueue = async function(runId, approve) {
+      const commentInput = document.getElementById(`q-comment-${runId}`);
+      const comment = commentInput ? commentInput.value.trim() : '';
+      try {
+        const updated = await apiPost(`/api/runs/${encodeURIComponent(runId)}/decision`, { approve, comment });
+        showToast(approve ? 'Дію успішно схвалено' : 'Дію відхилено');
+        renderWorkflowRun(updated);
+        loadQueue();
+        loadRuns();
+      } catch (err) {
+        showToast('Помилка: ' + err.message);
+      }
+    };
+
+    window.openRun = async function(runId) {
+      try {
+        const run = await apiGet(`/api/runs/${encodeURIComponent(runId)}`);
+        renderWorkflowRun(run);
+        window.scrollTo({ top: document.getElementById('result-container').offsetTop - 20, behavior: 'smooth' });
+      } catch (err) {
+        showToast('Помилка відкриття звернення: ' + err.message);
+      }
+    };
+
+    async function loadRuns() {
+      try {
+        const list = await apiGet('/api/runs');
+        if (!list.length) {
+          runsTbody.innerHTML = '<tr><td colspan="6" class="empty-state">Звернень ще немає.</td></tr>';
+          return;
+        }
+
+        let html = '';
+        list.forEach(run => {
+          const custName = customersMap[run.customer_id] || run.customer_id;
+          const statusText = STATUS_LABELS[run.status] || run.status;
+          const updatedDate = run.updated_at ? run.updated_at.substring(11, 19) : '—';
+          html += `
+            <tr class="clickable" onclick="openRun('${run.run_id}')">
+              <td style="font-family: ui-monospace, monospace; font-weight: 600;">${run.run_id}</td>
+              <td>${custName}</td>
+              <td><span class="badge ${run.status}">${statusText}</span></td>
+              <td>${run.route || '—'}</td>
+              <td style="max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${run.text}</td>
+              <td style="color: var(--text-muted); font-size: 0.8rem;">${updatedDate}</td>
+            </tr>
+          `;
+        });
+        runsTbody.innerHTML = html;
+      } catch (err) {
+        runsTbody.innerHTML = `<tr><td colspan="6" class="empty-state">Помилка завантаження списку: ${err.message}</td></tr>`;
+      }
+    }
+
+    requestForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = requestText.value.trim();
+      if (!text) return;
+
+      const customer_id = customerSelect.value;
+      const mode = selectedModeInput.value;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Обробка звернення...';
+
+      try {
+        const res = await apiPost('/api/requests', { customer_id, text, mode });
+        if (res.mode === 'agent') {
+          renderAgentRun(res);
+        } else {
+          renderWorkflowRun(res);
+        }
+        showToast('Звернення успішно оброблено');
+        loadQueue();
+        loadRuns();
+      } catch (err) {
+        showToast('Помилка: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Обробити звернення';
+      }
+    });
+
+    document.getElementById('reset-store-btn').addEventListener('click', async () => {
+      try {
+        await apiPost('/api/reset', {});
+        showToast('Дані магазину успішно скинуто до початкових');
+        loadQueue();
+        loadRuns();
+      } catch (err) {
+        showToast('Помилка скидання: ' + err.message);
+      }
+    });
+
+    document.getElementById('refresh-queue-btn').addEventListener('click', loadQueue);
+    document.getElementById('refresh-runs-btn').addEventListener('click', loadRuns);
+
+    loadCustomers().then(() => {
+      loadQueue();
+      loadRuns();
+    });
+  </script>
+</body>
+</html>

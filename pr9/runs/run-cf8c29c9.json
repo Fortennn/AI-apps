@@ -1,0 +1,65 @@
+{
+  "run_id": "run-cf8c29c9",
+  "customer_id": "C-1003",
+  "text": "Хочу повернути товар.",
+  "status": "needs_info",
+  "route": "return",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Хочу повернути товар."
+      },
+      "output": {
+        "kind": "return",
+        "order_id": null,
+        "item": null,
+        "reason": null,
+        "reason_text": "Хочу повернути товар.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.564484+00:00"
+    },
+    {
+      "n": 2,
+      "name": "identify_order",
+      "kind": "code",
+      "status": "needs_info",
+      "detail": "Не вказано номер замовлення",
+      "input": {
+        "customer_id": "C-1003",
+        "text": "Хочу повернути товар."
+      },
+      "output": {
+        "reply": "Будь ласка, уточніть номер замовлення та товар, якого стосується ваше звернення."
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.564528+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Будь ласка, уточніть номер замовлення та товар, якого стосується ваше звернення.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 2.8999987989664078e-05,
+    "total": 0.0001
+  },
+  "created_at": "2026-10-27T08:12:33.564444+00:00",
+  "updated_at": "2026-10-27T08:12:33.564535+00:00"
+}

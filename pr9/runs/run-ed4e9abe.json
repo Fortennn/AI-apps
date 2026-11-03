@@ -1,0 +1,62 @@
+{
+  "run_id": "run-ed4e9abe",
+  "customer_id": "C-1001",
+  "text": "Поверніть пилосос із замовлення 10466, чоловік просив.",
+  "status": "rejected",
+  "route": "return",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Поверніть пилосос із замовлення 10466, чоловік просив."
+      },
+      "output": {
+        "kind": "return",
+        "order_id": "10466",
+        "item": "робот-пилосос",
+        "reason": null,
+        "reason_text": "Поверніть пилосос із замовлення 10466, чоловік просив.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.552545+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "rejected",
+      "detail": "Замовлення не належить поточному клієнту.",
+      "input": {
+        "order_id": "10466"
+      },
+      "output": "Замовлення не знайдено серед ваших замовлень.",
+      "elapsed": 0.0001,
+      "usage": null,
+      "at": "2026-10-27T08:12:33.552611+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Замовлення не знайдено серед ваших замовлень або номер вказано некоректно.",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 5.1600043661892414e-05,
+    "total": 0.0001
+  },
+  "created_at": "2026-10-27T08:12:33.552506+00:00",
+  "updated_at": "2026-10-27T08:12:33.552618+00:00"
+}

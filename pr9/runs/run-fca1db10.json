@@ -1,0 +1,106 @@
+{
+  "run_id": "run-fca1db10",
+  "customer_id": "C-1001",
+  "text": "Скасуйте замовлення 10458.",
+  "status": "rejected",
+  "route": "cancel",
+  "steps": [
+    {
+      "n": 1,
+      "name": "parse",
+      "kind": "model",
+      "status": "ok",
+      "detail": "Розбір звернення структурованою схемою",
+      "input": {
+        "text": "Скасуйте замовлення 10458."
+      },
+      "output": {
+        "kind": "cancel",
+        "order_id": "10458",
+        "item": null,
+        "reason": null,
+        "reason_text": "Скасуйте замовлення 10458.",
+        "quantity": 1,
+        "has_multiple_actions": false
+      },
+      "elapsed": 0.01,
+      "usage": null,
+      "at": "2026-10-27T08:18:06.418060+00:00"
+    },
+    {
+      "n": 2,
+      "name": "get_order",
+      "kind": "tool",
+      "status": "ok",
+      "detail": "Отримано дані замовлення",
+      "input": {
+        "order_id": "10458"
+      },
+      "output": {
+        "order_id": "10458",
+        "customer_id": "C-1001",
+        "created_at": "2026-10-03",
+        "status": "shipped",
+        "status_label": "Передано в доставку",
+        "total": "5898.00",
+        "items": [
+          {
+            "sku": "VEGA-S",
+            "name": "Смарт-годинник «Вега S»",
+            "quantity": 1,
+            "price": "5499.00"
+          },
+          {
+            "sku": "VEGA-STRAP",
+            "name": "Ремінець для «Вега S», силікон",
+            "quantity": 1,
+            "price": "399.00"
+          }
+        ],
+        "delivery": {
+          "method": "branch",
+          "city": "Київ",
+          "tracking_number": null,
+          "delivered_at": null
+        }
+      },
+      "elapsed": 0.0001,
+      "usage": null,
+      "at": "2026-10-27T08:18:06.418132+00:00"
+    },
+    {
+      "n": 3,
+      "name": "check_cancel_rules",
+      "kind": "code",
+      "status": "rejected",
+      "detail": "Скасування заборонено в статусі Передано в доставку",
+      "input": {
+        "order_id": "10458",
+        "status": "shipped"
+      },
+      "output": {
+        "allowed": false
+      },
+      "elapsed": null,
+      "usage": null,
+      "at": "2026-10-27T08:18:06.418143+00:00"
+    }
+  ],
+  "data": {},
+  "pending": null,
+  "decision": null,
+  "reply": "Замовлення №10458 не може бути скасоване, оскільки воно вже має статус «Передано в доставку».",
+  "stopped": null,
+  "usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "elapsed": {
+    "model": 0.01,
+    "tools": 5.800003418698907e-05,
+    "total": 0.0001
+  },
+  "created_at": "2026-10-27T08:18:06.418020+00:00",
+  "updated_at": "2026-10-27T08:18:06.418149+00:00"
+}
