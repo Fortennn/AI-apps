@@ -1,0 +1,111 @@
+{
+  "sc1": {
+    "status": "done",
+    "first_token": 0.20075249671936035,
+    "total": 1.3767890930175781
+  },
+  "sc2": {
+    "elapsed": 0.506617546081543,
+    "kind": "timeout"
+  },
+  "sc3": {
+    "deltas": 1,
+    "elapsed": 0.4606916904449463,
+    "kind": "timeout"
+  },
+  "sc4": {
+    "attempts": 2,
+    "success": true
+  },
+  "sc5": {
+    "attempts": 3,
+    "kind": "unavailable"
+  },
+  "sc6": {
+    "provider": "mock",
+    "model": "mock-1"
+  },
+  "sc7": {
+    "attempts": 2,
+    "retryable": false
+  },
+  "sc8": {
+    "elapsed": 1.8810911178588867,
+    "attempts": 2
+  },
+  "sc9": {
+    "resets": 1,
+    "attempts": 2
+  },
+  "sc10": {
+    "elapsed": 0.5224034786224365,
+    "attempts": 3
+  },
+  "sc11": {
+    "status": "running"
+  },
+  "sc12": {
+    "rejected": true,
+    "msg": "Чернетка вже завершена зі статусом 'done'"
+  },
+  "sc14_15": {
+    "admitted": 10,
+    "rejected": 5,
+    "retry_after": 60.0
+  },
+  "sc16": [
+    {
+      "id": "d01",
+      "first_token": 4.332294464111328,
+      "total_time": 4.601988315582275,
+      "chunks": 7,
+      "warnings": [
+        "Бажано персоналізувати відповідь: додати звертання до Ірина."
+      ],
+      "length": 362
+    },
+    {
+      "id": "d02",
+      "first_token": 5.288560390472412,
+      "total_time": 5.658968448638916,
+      "chunks": 8,
+      "warnings": [
+        "Бажано персоналізувати відповідь: додати звертання до Ірина."
+      ],
+      "length": 374
+    },
+    {
+      "id": "d03",
+      "first_token": 2.2336361408233643,
+      "total_time": 2.489060878753662,
+      "chunks": 7,
+      "warnings": [
+        "Бажано персоналізувати відповідь: додати звертання до Олена."
+      ],
+      "length": 333
+    },
+    {
+      "id": "d04",
+      "first_token": 6.063248634338379,
+      "total_time": 6.599725961685181,
+      "chunks": 9,
+      "warnings": [
+        "Бажано персоналізувати відповідь: додати звертання до Олена."
+      ],
+      "length": 428
+    },
+    {
+      "id": "d05",
+      "first_token": 1.3278045654296875,
+      "total_time": 1.6128313541412354,
+      "chunks": 6,
+      "warnings": [
+        "Бажано персоналізувати відповідь: додати звертання до Олена."
+      ],
+      "length": 249
+    }
+  ],
+  "sc17": {
+    "ok": true
+  }
+}
